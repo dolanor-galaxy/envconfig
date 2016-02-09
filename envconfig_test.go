@@ -22,6 +22,9 @@ type Specification struct {
 	RequiredVar                  string `required:"true"`
 	NoPrefixDefault              string `envconfig:"BROKER" default:"127.0.0.1"`
 	RequiredDefault              string `required:"true" default:"foo2bar"`
+	Nested                       struct {
+		Foo string
+	}
 }
 
 func TestProcess(t *testing.T) {
@@ -54,6 +57,21 @@ func TestProcess(t *testing.T) {
 	}
 	if s.RequiredVar != "foo" {
 		t.Errorf("expected %s, got %s", "foo", s.RequiredVar)
+	}
+}
+
+func TestProcessNested(t *testing.T) {
+	var s Specification
+	os.Clearenv()
+	os.Setenv("ENV_CONFIG_NESTED_FOO", "qux")
+	os.Setenv("ENV_CONFIG_REQUIREDVAR", "foo")
+	err := Process("env_config", &s)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if s.Nested.Foo != "qux" {
+		t.Errorf("expected %s, got %s", "qux", s.Nested.Foo)
 	}
 }
 
