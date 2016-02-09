@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/serenize/snaker"
 )
 
 // ErrInvalidSpecification indicates that a specification is of the wrong type.
@@ -39,7 +41,7 @@ func Process(prefix string, spec interface{}) error {
 		f := s.Field(i)
 		if f.CanSet() {
 			alt := typeOfSpec.Field(i).Tag.Get("envconfig")
-			fieldName := typeOfSpec.Field(i).Name
+			fieldName := snaker.CamelToSnake(typeOfSpec.Field(i).Name)
 			if alt != "" {
 				fieldName = alt
 			}
