@@ -18,10 +18,7 @@ type Specification struct {
 	MultiWordVarWithAlt          string `envconfig:"MULTI_WORD_VAR_WITH_ALT"`
 	MultiWordVarWithLowerCaseAlt string `envconfig:"multi_word_var_with_lower_case_alt"`
 	NoPrefixWithAlt              string `envconfig:"SERVICE_HOST"`
-	DefaultVar                   string `default:"foobar"`
 	RequiredVar                  string `required:"true"`
-	NoPrefixDefault              string `envconfig:"BROKER" default:"127.0.0.1"`
-	RequiredDefault              string `required:"true" default:"foo2bar"`
 	Nested                       struct {
 		Foo string
 	}
@@ -192,70 +189,6 @@ func TestRequiredVar(t *testing.T) {
 
 	if s.RequiredVar != "foobar" {
 		t.Errorf("expected %s, got %s", "foobar", s.RequiredVar)
-	}
-}
-
-func TestBlankDefaultVar(t *testing.T) {
-	var s Specification
-	os.Clearenv()
-	os.Setenv("ENV_CONFIG_REQUIRED_VAR", "requiredvalue")
-	if err := Process("env_config", &s); err != nil {
-		t.Error(err.Error())
-	}
-
-	if s.DefaultVar != "foobar" {
-		t.Errorf("expected %s, got %s", "foobar", s.DefaultVar)
-	}
-}
-
-func TestNonBlankDefaultVar(t *testing.T) {
-	var s Specification
-	os.Clearenv()
-	os.Setenv("ENV_CONFIG_DEFAULT_VAR", "nondefaultval")
-	os.Setenv("ENV_CONFIG_REQUIRED_VAR", "requiredvalue")
-	if err := Process("env_config", &s); err != nil {
-		t.Error(err.Error())
-	}
-
-	if s.DefaultVar != "nondefaultval" {
-		t.Errorf("expected %s, got %s", "nondefaultval", s.DefaultVar)
-	}
-}
-
-func TestAlternateNameDefaultVar(t *testing.T) {
-	var s Specification
-	os.Clearenv()
-	os.Setenv("BROKER", "betterbroker")
-	os.Setenv("ENV_CONFIG_REQUIRED_VAR", "foo")
-	if err := Process("env_config", &s); err != nil {
-		t.Error(err.Error())
-	}
-
-	if s.NoPrefixDefault != "betterbroker" {
-		t.Errorf("expected %q, got %q", "betterbroker", s.NoPrefixDefault)
-	}
-
-	os.Clearenv()
-	os.Setenv("ENV_CONFIG_REQUIRED_VAR", "foo")
-	if err := Process("env_config", &s); err != nil {
-		t.Error(err.Error())
-	}
-
-	if s.NoPrefixDefault != "127.0.0.1" {
-		t.Errorf("expected %q, got %q", "127.0.0.1", s.NoPrefixDefault)
-	}
-}
-
-func TestRequiredDefault(t *testing.T) {
-	var s Specification
-	os.Clearenv()
-	os.Setenv("ENV_CONFIG_REQUIRED_VAR", "foo")
-	if err := Process("env_config", &s); err != nil {
-		t.Error(err.Error())
-	}
-
-	if s.RequiredDefault != "foo2bar" {
-		t.Errorf("expected %q, got %q", "foo2bar", s.RequiredDefault)
 	}
 }
 

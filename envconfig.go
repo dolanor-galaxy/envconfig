@@ -59,11 +59,6 @@ func Process(prefix string, spec interface{}) error {
 				value = os.Getenv(key)
 			}
 
-			def := typeOfSpec.Field(i).Tag.Get("default")
-			if def != "" && value == "" {
-				value = def
-			}
-
 			req := typeOfSpec.Field(i).Tag.Get("required")
 			if value == "" {
 				if req == "true" {
